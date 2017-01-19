@@ -1,0 +1,2 @@
+Hello Plugin World!
+This is a text resource, used in the demo e-mail body.
