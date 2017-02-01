@@ -1,10 +1,11 @@
 using System;
 using NDK.Framework;
 using System.Data;
+using System.DirectoryServices.AccountManagement;
 
 namespace NDK.DemoPlugin {
 
-	#region SofdPlugin class.
+	#region DemoPlugin class.
 	public class DemoPlugin : PluginBase {
 
 		#region Implement PluginBase abstraction.
@@ -50,9 +51,9 @@ namespace NDK.DemoPlugin {
 			// Configuration.
 			this.Log("CONFIGURATION");
 			//this.Log("{0} global properties exist in the configuration.", this.GetKeys());		// not implemented.
-			this.Log("{0} plugin properties exist in the configuration.", this.GetKeys().Length);
-			foreach (String key in this.GetKeys()) {
-				foreach (String value in this.GetValues(key)) {
+			this.Log("{0} plugin properties exist in the configuration.", this.GetConfigKeys().Length);
+			foreach (String key in this.GetConfigKeys()) {
+				foreach (String value in this.GetConfigValues(key)) {
 					this.Log("   {0} = {1}", key, value);
 				}
 			}
@@ -73,8 +74,8 @@ namespace NDK.DemoPlugin {
 
 			// Email.
 			this.Log("E-MAIL");
-			this.Log("Senging e-mail with the 'Email message.txt' as message.");
-			this.SendMail("rpc@norddjurs.dk", "NDK Demo Plugin", this.GetResourceStr("Email message.txt", String.Empty));
+			this.Log("Sending e-mail with the 'Email message.txt' as message.");
+//			this.SendMail("rpc@norddjurs.dk", "NDK Demo Plugin", this.GetResourceStr("Email message.txt", String.Empty));
 
 			// Database.
 			this.Log("DATABASE");
@@ -84,6 +85,22 @@ namespace NDK.DemoPlugin {
 					while (dbReader.Read() == true) {
 						this.Log("   {0}", dbReader["name"]);
 					}
+				}
+			}
+
+			// Users and groups.
+			this.Log("USERS AND GROUPS");
+			UserPrincipal user = this.GetUser(Environment.UserName); //this.GetCurrentUser();
+			if (user != null) {
+				this.Log("         Display Name: {0}", user.DisplayName);
+				this.Log("        Email Address: {0}", user.EmailAddress);
+				this.Log("   Distinguished Name: {0}", user.DistinguishedName);
+				this.Log("     Sam Account Name: {0}", user.SamAccountName);
+				this.Log("  User Principal Name: {0}", user.UserPrincipalName);
+				this.Log("  Security Identifier: {0}", user.Sid);
+				this.Log("                 Guid: {0}", user.Guid);
+				foreach (GroupPrincipal group in user.GetGroups()) {
+					this.Log("                Group: {0} ({1})", group.Name, group.DisplayName);
 				}
 			}
 
