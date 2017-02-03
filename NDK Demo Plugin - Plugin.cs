@@ -2,6 +2,7 @@ using System;
 using NDK.Framework;
 using System.Data;
 using System.DirectoryServices.AccountManagement;
+using System.Collections.Generic;
 
 namespace NDK.DemoPlugin {
 
@@ -75,7 +76,7 @@ namespace NDK.DemoPlugin {
 			// Email.
 			this.Log("E-MAIL");
 			this.Log("Sending e-mail with the 'Email message.txt' as message.");
-//			this.SendMail("rpc@norddjurs.dk", "NDK Demo Plugin", this.GetResourceStr("Email message.txt", String.Empty));
+			//this.SendMail("NDK Demo Plugin", this.GetResourceStr("Email message.txt", String.Empty));
 
 			// Database.
 			this.Log("DATABASE");
@@ -90,7 +91,7 @@ namespace NDK.DemoPlugin {
 
 			// Users and groups.
 			this.Log("USERS AND GROUPS");
-			UserPrincipal user = this.GetUser(Environment.UserName); //this.GetCurrentUser();
+			Person user = this.GetUser(Environment.UserName); //this.GetCurrentUser();
 			if (user != null) {
 				this.Log("         Display Name: {0}", user.DisplayName);
 				this.Log("        Email Address: {0}", user.EmailAddress);
@@ -99,15 +100,44 @@ namespace NDK.DemoPlugin {
 				this.Log("  User Principal Name: {0}", user.UserPrincipalName);
 				this.Log("  Security Identifier: {0}", user.Sid);
 				this.Log("                 Guid: {0}", user.Guid);
+				this.Log("         Mobile Phone: {0}", user.MobilePhone);
+				this.Log("         Ext. Attr. 2: {0}", user.ExtensionAttribute2);
 				foreach (GroupPrincipal group in user.GetGroups()) {
 					this.Log("                Group: {0} ({1})", group.Name, group.DisplayName);
 				}
 			}
 
+			this.Log("All filtered users:");
+			foreach (Person user1 in this.GetAllUsers(UserQuery.ACCOUNT_LOCKED_OUT)) {
+				this.Log("         Display Name: {0}", user1.DisplayName);
+			}
+
+			// Event.
+			this.Log("EVENT");
+			this.SendEvent(PluginBase.EVENT_NONE, new { Key1 = "valueObject1", Key2 = "valueObject2" });
+
 			// Exception.
 			this.Log("EXCEPTION");
 			throw new Exception("This happens when an exception is thrown and not caught!");
 		} // Run
+
+		/// <summary>
+		/// Handle events.
+		/// This method is invoked by another plugin.
+		/// 
+		/// When implementing a plugin, only use your own event id greater then 1000. Event id less then 1000 is reserved
+		/// for global events. They will be declared as public constants in the PluginBase class like "EVENT_NONE".
+		/// </summary>
+		/// <param name="eventId">The event identifier.</param>
+		/// <param name="eventObjects">The event objects.</param>
+		public override void RunEvent(Int32 eventId, IDictionary<String, Object> eventObjects) {
+			// Event.
+			this.Log("The event id {0} is triggered in plugin {1}   {2}.", eventId, this.GetGuid(), this.GetName());
+			this.Log("{0} event objects passed.", eventObjects.Count);
+			foreach (String key in eventObjects.Keys) {
+				this.Log("   {0} = {1}", key, eventObjects[key]);
+			}
+		} // Event
 		#endregion
 
 	} // DemoPlugin
@@ -173,6 +203,7 @@ namespace NDK.DemoPlugin {
 		SmtpHost			The SMTP hostname or IP
 		SmtpPort			The SMTP port number
 		SmtpFrom			The default FROM address to use, when not specified
+		SmtpTo				The default TO address to use, when not specified
 	-->
     <Property Key="SmtpHost">
       <Value>smtp.intern.dk</Value>
@@ -182,6 +213,15 @@ namespace NDK.DemoPlugin {
     </Property>
     <Property Key="SmtpFrom">
       <Value>Demo@intern.dk</Value>
+    </Property>
+    <Property Key="SmtpTo">
+      <Value>Support@intern.dk</Value>
+    </Property>
+
+	<!-- Active Directory
+	-->
+    <Property Key="ActiveDirectoryCprAttribute">
+      <Value>EmployeeId</Value>
     </Property>
 	
 	<!-- SQL
@@ -203,6 +243,13 @@ namespace NDK.DemoPlugin {
     </Property>
     <Property Key="SqlDatabaseDEMO">
       <Value>master</Value>
+    </Property>
+
+	<!-- Active Directory
+		ActiveDirectoryCprAttribute		EmployeeId (default)
+	-->
+    <Property Key="ActiveDirectoryCprAttribute">
+      <Value>EmployeeId</Value>
     </Property>
 
   </Section>
