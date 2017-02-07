@@ -107,11 +107,6 @@ namespace NDK.DemoPlugin {
 				}
 			}
 
-			this.Log("All filtered users:");
-			foreach (Person user1 in this.GetAllUsers(UserQuery.ACCOUNT_LOCKED_OUT)) {
-				this.Log("         Display Name: {0}", user1.DisplayName);
-			}
-
 			// Event.
 			this.Log("EVENT");
 			this.SendEvent(PluginBase.EVENT_NONE, new { Key1 = "valueObject1", Key2 = "valueObject2" });
