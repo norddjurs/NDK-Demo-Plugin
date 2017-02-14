@@ -169,6 +169,7 @@ namespace NDK.DemoPlugin {
 		LogError			true | 1
 		LogConsole			true | 1
 		LogWindows			true | 1
+		LogEvent			true | 1
 		LogFile				true | 1 | <full log filename>
 		LogFileRollSizeMB	Roll the file log at size in megabytes
 		LogFileRollCount	Keep number of log rolls.
@@ -190,6 +191,9 @@ namespace NDK.DemoPlugin {
     </Property>
     <Property Key="LogWindows">
       <Value>False</Value>
+    </Property>
+    <Property Key="LogEvent">
+      <Value>True</Value>
     </Property>
     <Property Key="LogFile">
       <Value>True</Value>
