@@ -109,7 +109,7 @@ namespace NDK.DemoPlugin {
 
 			// Event.
 			this.Log("EVENT");
-			this.SendEvent(PluginBase.EVENT_NONE, new { Key1 = "valueObject1", Key2 = "valueObject2" });
+			this.SendEvent(PluginEvents.EVENT_NONE, new { Key1 = "valueObject1", Key2 = "valueObject2" });
 
 			// Exception.
 			this.Log("EXCEPTION");
@@ -125,9 +125,10 @@ namespace NDK.DemoPlugin {
 		/// </summary>
 		/// <param name="eventId">The event identifier.</param>
 		/// <param name="eventObjects">The event objects.</param>
-		public override void RunEvent(Int32 eventId, IDictionary<String, Object> eventObjects) {
+		public override void RunEvent(Guid sender, Int32 eventId, IDictionary<String, Object> eventObjects) {
 			// Event.
 			this.Log("The event id {0} is triggered in plugin {1}   {2}.", eventId, this.GetGuid(), this.GetName());
+			this.Log("The event is triggered from plugin {0}.", sender);
 			this.Log("{0} event objects passed.", eventObjects.Count);
 			foreach (String key in eventObjects.Keys) {
 				this.Log("   {0} = {1}", key, eventObjects[key]);
@@ -167,8 +168,10 @@ namespace NDK.DemoPlugin {
 		LogDebug			true | 1
 		LogError			true | 1
 		LogConsole			true | 1
-		LogFile				true | 1 | <full log filename>
 		LogWindows			true | 1
+		LogFile				true | 1 | <full log filename>
+		LogFileRollSizeMB	Roll the file log at size in megabytes
+		LogFileRollCount	Keep number of log rolls.
 		
 		The default log filename is the path and name of the executeable file, but with the ".log" extension.
 		When configuring a log filename, the directory must exist.
@@ -185,11 +188,17 @@ namespace NDK.DemoPlugin {
     <Property Key="LogConsole">
       <Value>True</Value>
     </Property>
+    <Property Key="LogWindows">
+      <Value>False</Value>
+    </Property>
     <Property Key="LogFile">
       <Value>True</Value>
     </Property>
-    <Property Key="LogWindows">
-      <Value>False</Value>
+    <Property Key="LogFileRollSizeMB">
+      <Value>10</Value>
+    </Property>
+    <Property Key="LogFileRollCount">
+      <Value>5</Value>
     </Property>
 	
 	<!-- SMTP
