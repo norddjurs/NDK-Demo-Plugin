@@ -51,10 +51,18 @@ namespace NDK.DemoPlugin {
 
 			// Configuration.
 			this.Log("CONFIGURATION");
-			//this.Log("{0} global properties exist in the configuration.", this.GetKeys());		// not implemented.
 			this.Log("{0} plugin properties exist in the configuration.", this.GetConfigKeys().Length);
 			foreach (String key in this.GetConfigKeys()) {
 				foreach (String value in this.GetConfigValues(key)) {
+					this.Log("   {0} = {1}", key, value);
+				}
+			}
+
+			// Option.
+			this.Log("OPTION");
+			this.Log("{0} plugin options exist in the registry.", this.GetOptionKeys().Length);
+			foreach (String key in this.GetOptionKeys()) {
+				foreach (String value in this.GetOptionValues(key)) {
 					this.Log("   {0} = {1}", key, value);
 				}
 			}
