@@ -126,7 +126,7 @@ namespace NDK.DemoPlugin {
 				if (employeeLeader != null) {
 					this.Log("               Leader: {0} - {1}", employeeLeader.MaNummer, employeeLeader.Navn);
 				}
-				SofdOrganisation organisation = employee.GetOrganisation();
+				SofdOrganization organisation = employee.GetOrganisation();
 				if (organisation != null) {
 					this.Log("      Organisation ID: {0} - {1} ({2})", organisation.OrganisationId, organisation.Navn, organisation.KortNavn);
 				}
