@@ -115,6 +115,27 @@ namespace NDK.DemoPlugin {
 				}
 			}
 
+			// SOFD.
+			this.Log("SOFD EMPLOYEE AND ORGANISATION");
+			SofdEmployee employee = this.SofdDirectory.GetEmployee(Environment.UserName);
+			if (employee != null) {
+				this.Log("          Employee ID: {0}", employee.MedarbejderId);
+				this.Log("         Display Name: {0}", employee.KaldeNavn);
+				this.Log("                 Name: {0}", employee.Navn);
+				SofdEmployee employeeLeader = employee.GetNearestLeader();
+				if (employeeLeader != null) {
+					this.Log("               Leader: {0} - {1}", employeeLeader.MaNummer, employeeLeader.Navn);
+				}
+				SofdOrganisation organisation = employee.GetOrganisation();
+				if (organisation != null) {
+					this.Log("      Organisation ID: {0} - {1} ({2})", organisation.OrganisationId, organisation.Navn, organisation.KortNavn);
+				}
+				List<SofdEmployee> employeeCollegues = employee.GetEmployeeWithSameNearestLeader(true);
+				foreach (SofdEmployee employeeCollegue in employeeCollegues) {
+					this.Log("             Collegue: {0} - {1}", employeeCollegue.MaNummer, employeeCollegue.Navn);
+				}
+			}
+
 			// Event.
 			this.Log("EVENT");
 			this.SendEvent(PluginEvents.EVENT_NONE, new { Key1 = "valueObject1", Key2 = "valueObject2" });
@@ -239,6 +260,13 @@ namespace NDK.DemoPlugin {
     <Property Key="ActiveDirectoryCprAttribute">
       <Value>EmployeeId</Value>
     </Property>
+
+	<!-- SOFD Directory
+		SofdDirectoryDatabaseKey		MDM-PROD
+	-->
+    <Property Key="SofdDirectoryDatabaseKey">
+      <Value>MDM-PROD</Value>
+    </Property>
 	
 	<!-- SQL
 		Configure the following database connections.
@@ -254,6 +282,13 @@ namespace NDK.DemoPlugin {
 		If the userid and password are blank/missing, Windows Authentication (SSPI) is used
 		om Microsoft SQL Server.
 	-->
+    <Property Key="SqlHostMDM-PROD">
+      <Value>MIMER03.intern.norddjurs.dk</Value>
+    </Property>
+    <Property Key="SqlDatabaseMDM-PROD">
+      <Value>MDM</Value>
+    </Property>
+
     <Property Key="SqlHostDEMO">
       <Value>sql.intern.dk</Value>
     </Property>
