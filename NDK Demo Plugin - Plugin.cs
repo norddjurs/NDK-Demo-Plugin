@@ -114,6 +114,16 @@ namespace NDK.DemoPlugin {
 					this.Log("                Group: {0} ({1})", group.Name, group.DisplayName);
 				}
 			}
+			this.Log("Listing LOCKED user accunts:");
+			List<Person> usersLocked = this.GetAllUsers(UserQuery.ACCOUNT_LOCKED_OUT);
+			foreach (Person userLocked in usersLocked) {
+				this.Log("                 User: {0} - {1}", userLocked.SamAccountName, userLocked.DisplayName);
+			}
+			this.Log("Listing EXPIRED user accunts:");
+			List<Person> usersExpired = this.GetAllUsers(UserQuery.ACCOUNT_EXPIRED);
+			foreach (Person userExpired in usersExpired) {
+				this.Log("                 User: {0} - {1}", userExpired.SamAccountName, userExpired.DisplayName);
+			}
 
 			// SOFD.
 			this.Log("SOFD EMPLOYEE AND ORGANISATION");
@@ -283,7 +293,7 @@ namespace NDK.DemoPlugin {
 		om Microsoft SQL Server.
 	-->
     <Property Key="SqlHostMDM-PROD">
-      <Value>MIMER03.intern.norddjurs.dk</Value>
+      <Value>MDM.sql.intern.dk</Value>
     </Property>
     <Property Key="SqlDatabaseMDM-PROD">
       <Value>MDM</Value>
