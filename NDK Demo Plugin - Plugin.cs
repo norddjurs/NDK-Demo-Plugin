@@ -84,7 +84,7 @@ namespace NDK.DemoPlugin {
 			// Email.
 			this.Log("E-MAIL");
 			this.Log("Sending e-mail with the 'Email message.txt' as message.");
-			//this.SendMail("NDK Demo Plugin", this.GetResourceStr("Email message.txt", String.Empty));
+			//this.SendMail("NDK Demo Plugin", this.GetResourceStr("Email message.txt", String.Empty), false);
 
 			// Database.
 			this.Log("DATABASE");
