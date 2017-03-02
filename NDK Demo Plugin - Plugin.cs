@@ -127,7 +127,7 @@ namespace NDK.DemoPlugin {
 
 			// SOFD.
 			this.Log("SOFD EMPLOYEE AND ORGANISATION");
-			SofdEmployee employee = this.SofdDirectory.GetEmployee(Environment.UserName);
+			SofdEmployee employee = this.GetEmployee(Environment.UserName);
 			if (employee != null) {
 				this.Log("          Employee ID: {0}", employee.MedarbejderId);
 				this.Log("         Display Name: {0}", employee.KaldeNavn);
