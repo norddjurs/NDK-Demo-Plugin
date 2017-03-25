@@ -3,11 +3,12 @@ using NDK.Framework;
 using System.Data;
 using System.DirectoryServices.AccountManagement;
 using System.Collections.Generic;
+using NDK.Framework.CprBroker;
 
 namespace NDK.DemoPlugin {
 
 	#region DemoPlugin class.
-	public class DemoPlugin : PluginBase {
+	public class DemoPlugin : BasePlugin {
 
 		#region Implement PluginBase abstraction.
 		/// <summary>
@@ -51,9 +52,9 @@ namespace NDK.DemoPlugin {
 
 			// Configuration.
 			this.Log("CONFIGURATION");
-			this.Log("{0} plugin properties exist in the configuration.", this.GetConfigKeys().Length);
-			foreach (String key in this.GetConfigKeys()) {
-				foreach (String value in this.GetConfigValues(key)) {
+			this.Log("{0} plugin properties exist in the configuration.", this.GetLocalKeys().Length);
+			foreach (String key in this.GetLocalKeys()) {
+				foreach (String value in this.GetLocalValues(key)) {
 					this.Log("   {0} = {1}", key, value);
 				}
 			}
@@ -69,8 +70,8 @@ namespace NDK.DemoPlugin {
 
 			// Arguments.
 			this.Log("ARGUMENTS");
-			this.Log("{0} arguments passed on the command line.", this.Arguments.Length);
-			foreach (String arg in this.Arguments) {
+			this.Log("{0} arguments passed on the command line.", this.GetArguments().Length);
+			foreach (String arg in this.GetArguments()) {
 				this.Log("   {0}", arg);
 			}
 
@@ -89,7 +90,7 @@ namespace NDK.DemoPlugin {
 			// Database.
 			this.Log("DATABASE");
 			this.Log("Listing databases:");
-			using (IDbConnection db = this.GetSqlConnection("DEMO")) {
+			using (IDbConnection db = this.GetDatabaseConnection("DEMO")) {
 				using (IDataReader dbReader = this.ExecuteSql(db, "SELECT name FROM master.dbo.sysdatabases ORDER BY name")) {
 					while (dbReader.Read() == true) {
 						this.Log("   {0}", dbReader["name"]);
@@ -99,7 +100,7 @@ namespace NDK.DemoPlugin {
 
 			// Users and groups.
 			this.Log("USERS AND GROUPS");
-			Person user = this.GetUser(Environment.UserName); //this.GetCurrentUser();
+			AdUser user = this.GetUser(Environment.UserName); //this.GetCurrentUser();
 			if (user != null) {
 				this.Log("         Display Name: {0}", user.DisplayName);
 				this.Log("        Email Address: {0}", user.EmailAddress);
@@ -108,20 +109,20 @@ namespace NDK.DemoPlugin {
 				this.Log("  User Principal Name: {0}", user.UserPrincipalName);
 				this.Log("  Security Identifier: {0}", user.Sid);
 				this.Log("                 Guid: {0}", user.Guid);
-				this.Log("         Mobile Phone: {0}", user.MobilePhone);
+				this.Log("         Mobile Phone: {0}", user.Mobile);
 				this.Log("         Ext. Attr. 2: {0}", user.ExtensionAttribute2);
 				foreach (GroupPrincipal group in user.GetGroups()) {
 					this.Log("                Group: {0} ({1})", group.Name, group.DisplayName);
 				}
 			}
 			this.Log("Listing LOCKED user accunts:");
-			List<Person> usersLocked = this.GetAllUsers(UserQuery.ACCOUNT_LOCKED_OUT);
-			foreach (Person userLocked in usersLocked) {
+			List<AdUser> usersLocked = this.GetAllUsers(UserQuery.ACCOUNT_LOCKED_OUT);
+			foreach (AdUser userLocked in usersLocked) {
 				this.Log("                 User: {0} - {1}", userLocked.SamAccountName, userLocked.DisplayName);
 			}
 			this.Log("Listing EXPIRED user accunts:");
-			List<Person> usersExpired = this.GetAllUsers(UserQuery.ACCOUNT_EXPIRED);
-			foreach (Person userExpired in usersExpired) {
+			List<AdUser> usersExpired = this.GetAllUsers(UserQuery.ACCOUNT_EXPIRED);
+			foreach (AdUser userExpired in usersExpired) {
 				this.Log("                 User: {0} - {1}", userExpired.SamAccountName, userExpired.DisplayName);
 			}
 
@@ -143,6 +144,17 @@ namespace NDK.DemoPlugin {
 				List<SofdEmployee> employeeCollegues = employee.GetEmployeeWithSameNearestLeader(true);
 				foreach (SofdEmployee employeeCollegue in employeeCollegues) {
 					this.Log("             Collegue: {0} - {1}", employeeCollegue.MaNummer, employeeCollegue.Navn);
+				}
+			}
+
+			// CPR QUERY.
+			if (employee != null) {
+				this.Log("CPR");
+				CprSearchResult cprSearchResult = this.CprSearch(employee.CprNummer);
+				if (cprSearchResult != null) {
+					this.Log("          Employee ID: {0}", employee.MedarbejderId);
+					this.Log("         Employee Cpr: {0}", cprSearchResult.CprNumber);
+					this.Log("            Full Name: {0}", cprSearchResult.FullName);
 				}
 			}
 
@@ -173,6 +185,7 @@ namespace NDK.DemoPlugin {
 				this.Log("   {0} = {1}", key, eventObjects[key]);
 			}
 		} // Event
+
 		#endregion
 
 	} // DemoPlugin
@@ -276,6 +289,43 @@ namespace NDK.DemoPlugin {
 	-->
     <Property Key="SofdDirectoryDatabaseKey">
       <Value>MDM-PROD</Value>
+    </Property>
+
+	<!-- CPR
+		CprEngine						0 = CPR Broker, 1 = Kombit Serviceplatform NAVNE3
+
+		CprBrokerServiceUrl
+		CprBrokerApplicationName
+		CprBrokerApplicationToken
+		
+		CprNavne3AgreementUuid
+		CprNavne3UserSystemUuid
+		CprNavne3UserUuid
+		CprNavne3CerfiticateSN
+		
+	-->
+    <Property Key="CprEngine">
+      <Value>1</Value>
+    </Property>
+	
+    <Property Key="CprBrokerServiceUrl">
+      <Value>http://cprbroker.intern.norddjurs.dk/Services/</Value>
+    </Property>
+    <Property Key="CprBrokerApplicationToken">
+      <Value>87f116e1-d3c6-4e92-8a5a-730bdbf0f7c2</Value>
+    </Property>
+	
+    <Property Key="CprNavne3AgreementUuid">
+      <Value>5EC34174-CB6B-4F83-9583-8C38BF20B2B0</Value>
+    </Property>
+    <Property Key="CprNavne3UserSystemUuid">
+      <Value>69D73055-AAF6-4FB4-8830-BF32CAA58DBD</Value>
+    </Property>
+    <Property Key="CprNavne3UserUuid">
+      <Value>52C15D33-F4E9-411C-A95B-193E3FCA895E</Value>
+    </Property>
+    <Property Key="CprNavne3CerfiticateSN">
+      <Value>86f411a0</Value>
     </Property>
 	
 	<!-- SQL
